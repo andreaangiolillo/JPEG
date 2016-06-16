@@ -3,7 +3,7 @@ Created on 13 giu 2016
 
 @author: corrado
 '''
-
+import sys
 import io
 import os
 from PIL import Image
@@ -12,14 +12,13 @@ import matplotlib.pyplot as plt
 from scipy import fftpack
 import urllib2
 import IPython
-from Tkinter import Tk
-from tkFileDialog import askopenfilename
+
 import numpy
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from scipy import misc
-from prova import get_image_from_url, get_2D_dct
+
 from numpy.random import ranf
 from PyQt4 import QtCore, QtGui
 import gui_jpeg
@@ -66,29 +65,33 @@ class Convert_to_jpeg:
             self.qf = float(50)/self.quality
 
     def set_q1(self):
-        self.q1 = np.zeros((8*self.n, 8*self.n))
+        self.q1 = np.ones((8*self.n, 8*self.n))
         
-        for line in range(len(self.q1)):
-            for col in range(len(self.q1[line])):
-                self.q1[line][col] = self.q[line/self.n][col/self.n]
+        if not (self.quality == 100):
+            for line in range(len(self.q1)):
+                for col in range(len(self.q1[line])):
+                    self.q1[line][col] = self.q[line/self.n][col/self.n]
                 
-        self.q1 = np.multiply(self.q1, self.qf) 
+            self.q1 = np.multiply(self.q1, self.qf) 
         
-        for line in range(len(self.q1)):
-            for col in range(len(self.q1[line])):
-                self.q1[line][col] = int(round(self.q1[line][col]))
+            for line in range(len(self.q1)):
+                for col in range(len(self.q1[line])):
+                    self.q1[line][col] = int(round(self.q1[line][col]))
         
     def set_img(self, path):
         if path != 0:
             self.img = self.get_image_from_url(path)
-        
+     
+
     def get_image_from_url(self,image_url):
         image = Image.open(image_url) 
-        #img_grey = image.convert('L') # converte l'immagine monocromatico
-        img = np.array(image, dtype=np.float)
+        img_grey = image.convert('L') # converte l'immagine monocromatico
+       
+        img = np.array(img_grey, dtype=np.float)
         return img  
         
-        
+    
+    
         
     #costruttore
     def __init__(self, n, q, path):
@@ -107,6 +110,8 @@ class Convert_to_jpeg:
         for i in range(len(newMatrix)):    
             for j in range(len(newMatrix[i])):                
                 if (i < line) and (j < col):
+                    #print  newMatrix[i][j] 
+                    #print m[i][j]
                     newMatrix[i][j] = m[i][j]
                 elif (i >= line) and (j < col):
                     newMatrix[i][j] = m[line - 1][j]
@@ -187,21 +192,20 @@ class Convert_to_jpeg:
     
 if __name__ == '__main__':
     
-    import sys
+   
     app = QtGui.QApplication(sys.argv)
     Form = QtGui.QWidget()
     ui = gui_jpeg.Ui_Form()
     ui.setupUi(Form)
+    
+ 
+    
+    
+    #convertitor = Convert_to_jpeg(6, 10, filename)
+    #pic = convertitor.convert_img()
+    #pic.save("C:\Users\corrado\Desktop\AAAA.jpeg")
+    
     Form.show()
     sys.exit(app.exec_())
-    
-    Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
-    filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
-    
-    
-    convertitor = Convert_to_jpeg(6, 10, filename)
-    pic = convertitor.convert_img()
-    pic.save("C:\Users\corrado\Desktop\AAAA.jpeg")
-    
     
     

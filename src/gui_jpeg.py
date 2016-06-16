@@ -7,7 +7,14 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-
+from Tkinter import Tk
+from tkFileDialog import askopenfilename
+from PyQt4.QtGui import QImage
+from PyQt4.Qt import QString
+import convert_to_jpeg
+from PyQt4.phonon import Phonon
+from matplotlib.delaunay.testfuncs import quality
+from numpy import int
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -23,9 +30,67 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Form(object):
+    
+    def valuechange(self):
+        size = self.quality.value()
+        self.lcd.display(size)
+    
+    
+    def buttomClickConvert(self):
+        q1 = int(self.quality.value())
+        print q1
+        n = int(self.plainTextEdit.toPlainText())
+        print n
+        convertitor = convert_to_jpeg.Convert_to_jpeg(n, q1, self.filename)
+        pic = convertitor.convert_img()
+        pic.save("C:\Users\Work\Desktop\dct2.jpeg")
+        
+        #mostra immagine su schermo 2
+        
+        scn2 = QtGui.QGraphicsScene()
+        self.graphicsView_2.setScene(scn2)
+        
+        pixmap_2 = QtGui.QPixmap("C:\Users\Work\Desktop\dct2.jpeg")
+        scn2.addPixmap(pixmap_2)
+        self.graphicsView_2.setScene(scn2)
+        
+    def buttonClickInput(self):
+        Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+        self.filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
+        
+        #mostra immagine su schermo 1
+        scn = QtGui.QGraphicsScene()
+        self.graphicsView.setScene(scn)
+        
+        
+        pixmap = QtGui.QPixmap(self.filename)
+        scn.addPixmap(pixmap)
+        self.graphicsView.setScene(scn)
+
+        #inizia con conversione qualità massima
+        convertitor = convert_to_jpeg.Convert_to_jpeg(1, 100, self.filename)
+        pic = convertitor.convert_img()
+        pic.save("C:\Users\Work\Desktop\dct2.jpeg")
+        
+        #mostra immagine su schermo 2
+        
+        scn2 = QtGui.QGraphicsScene()
+        self.graphicsView_2.setScene(scn2)
+        
+        pixmap_2 = QtGui.QPixmap("C:\Users\Work\Desktop\dct2.jpeg")
+        scn2.addPixmap(pixmap_2)
+        self.graphicsView_2.setScene(scn2)
+    
+    
+    
     def setupUi(self, Form):
+        
+        filename = ""
+        
+        
         Form.setObjectName(_fromUtf8("Form"))
         Form.resize(1318, 770)
+        
         self.groupBox_2 = QtGui.QGroupBox(Form)
         self.groupBox_2.setGeometry(QtCore.QRect(20, 20, 631, 601))
         self.groupBox_2.setStyleSheet(_fromUtf8("QGroupBox::title {\n"
@@ -86,24 +151,23 @@ class Ui_Form(object):
 "    border-radius: 0px\n"
 "}"))
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
-        self.quality = phonon.Phonon.SeekSlider(self.groupBox_3)
-        self.quality.setGeometry(QtCore.QRect(10, 30, 481, 22))
-        self.quality.setIconVisible(True)
-        self.quality.setProperty("1", 1)
-        self.quality.setProperty("2", 2)
-        self.quality.setProperty("3", 3)
-        self.quality.setProperty("4", 4)
-        self.quality.setProperty("5", 5)
-        self.quality.setProperty("6", 6)
-        self.quality.setProperty("7", 7)
-        self.quality.setProperty("8", 8)
-        self.quality.setProperty("9", 9)
-        self.quality.setObjectName(_fromUtf8("quality"))
-        self.plainTextEdit_2 = QtGui.QPlainTextEdit(self.groupBox_3)
-        self.plainTextEdit_2.setGeometry(QtCore.QRect(210, 60, 41, 31))
+        self.quality = QtGui.QSlider(self.groupBox_3)
+        self.quality.setOrientation(QtCore.Qt.Horizontal)
+        self.quality.setMinimum(1)
+        self.quality.setMaximum(100)
+        self.quality.setValue(100)
+        self.quality.setGeometry(QtCore.QRect(10, 25, 490, 31))
+        self.quality.valueChanged.connect(self.valuechange)
+        self.lcd = QtGui.QLCDNumber(self.groupBox_3)
+        self.lcd.setGeometry(QtCore.QRect(200, 50, 90, 31))
+        self.lcd.display("100")
+        
+        """""self.plainTextEdit_2 = QtGui.QPlainTextEdit(self.groupBox_3)
+        self.plainTextEdit_2.setGeometry(QtCore.QRect(210, 55, 31, 31))
+        self.plainTextEdit_2.appendPlainText("100")
         self.plainTextEdit_2.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);\n"
 "border-radius: 10px;"))
-        self.plainTextEdit_2.setObjectName(_fromUtf8("plainTextEdit_2"))
+        self.plainTextEdit_2.setObjectName(_fromUtf8("plainTextEdit_2"))"""
         self.groupBox_4 = QtGui.QGroupBox(Form)
         self.groupBox_4.setGeometry(QtCore.QRect(670, 630, 111, 101))
         self.groupBox_4.setStyleSheet(_fromUtf8("QGroupBox::title {\n"
@@ -126,10 +190,12 @@ class Ui_Form(object):
         self.plainTextEdit.setGeometry(QtCore.QRect(10, 20, 91, 31))
         self.plainTextEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);\n"
 "border-radius: 10px;"))
+        self.plainTextEdit.appendPlainText("1")
         self.plainTextEdit.setObjectName(_fromUtf8("plainTextEdit"))
         self.pushButton = QtGui.QPushButton(self.groupBox_4)
-        self.pushButton.setGeometry(QtCore.QRect(40, 60, 31, 26))
+        self.pushButton.setGeometry(QtCore.QRect(30, 60, 51, 26))
         self.pushButton.setMouseTracking(True)
+        self.pushButton.clicked.connect(self.buttomClickConvert)
         self.pushButton.setStyleSheet(_fromUtf8("QPushButton {\n"
 "\n"
 "text-color:black;\n"
@@ -165,7 +231,8 @@ class Ui_Form(object):
 "}"))
         self.groupBox_5.setObjectName(_fromUtf8("groupBox_5"))
         self.pushButton_2 = QtGui.QPushButton(self.groupBox_5)
-        self.pushButton_2.setGeometry(QtCore.QRect(10, 30, 81, 26))
+        self.pushButton_2.clicked.connect(self.buttonClickInput)
+        self.pushButton_2.setGeometry(QtCore.QRect(17, 25, 65, 26))
         self.pushButton_2.setMouseTracking(True)
         self.pushButton_2.setStyleSheet(_fromUtf8("QPushButton {\n"
 "\n"
@@ -183,7 +250,8 @@ class Ui_Form(object):
 "}"))
         self.pushButton_2.setCheckable(False)
         self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
-
+      
+        
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -193,7 +261,7 @@ class Ui_Form(object):
         self.groupBox.setTitle(_translate("Form", "DCT2", None))
         self.groupBox_3.setTitle(_translate("Form", "Quality", None))
         self.groupBox_4.setTitle(_translate("Form", "N", None))
-        self.pushButton.setText(_translate("Form", "OK", None))
+        self.pushButton.setText(_translate("Form", "Start", None))
         self.groupBox_5.setTitle(_translate("Form", "Open file", None))
         self.pushButton_2.setText(_translate("Form", "Open file", None))
 
