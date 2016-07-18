@@ -43,14 +43,14 @@ class Ui_Form(object):
         print n
         convertitor = convert_to_jpeg.Convert_to_jpeg(n, q1, self.filename)
         pic = convertitor.convert_img()
-        pic.save("C:\Users\Work\Desktop\dct2.jpeg")
+        pic.save("C:\Users\corrado\Desktop\dct2.jpeg")
         
         #mostra immagine su schermo 2
         
         scn2 = QtGui.QGraphicsScene()
-        self.graphicsView_2.setScene(scn2)
+        self.graphicsView.setScene(scn2)
         
-        pixmap_2 = QtGui.QPixmap("C:\Users\Work\Desktop\dct2.jpeg")
+        pixmap_2 = QtGui.QPixmap("C:\Users\corrado\Desktop\dct2.jpeg")
         scn2.addPixmap(pixmap_2)
         self.graphicsView_2.setScene(scn2)
         
@@ -58,26 +58,29 @@ class Ui_Form(object):
         Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
         self.filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
         
+        convertitor = convert_to_jpeg.Convert_to_jpeg(1, 100, self.filename)
+        
         #mostra immagine su schermo 1
+        pic_original = convertitor.get_reconstructed_image(convertitor.img)
+        pic_original.save("C:\Users\corrado\Desktop\original.jpeg")
+        
         scn = QtGui.QGraphicsScene()
         self.graphicsView.setScene(scn)
-        
-        
-        pixmap = QtGui.QPixmap(self.filename)
+        pixmap = QtGui.QPixmap("C:\Users\corrado\Desktop\original.jpeg")
         scn.addPixmap(pixmap)
         self.graphicsView.setScene(scn)
 
         #inizia con conversione qualità massima
-        convertitor = convert_to_jpeg.Convert_to_jpeg(1, 100, self.filename)
-        pic = convertitor.convert_img()
-        pic.save("C:\Users\Work\Desktop\dct2.jpeg")
+        
+        pic_conv = convertitor.convert_img()
+        pic_conv.save("C:\Users\corrado\Desktop\dct2.jpeg")
         
         #mostra immagine su schermo 2
         
         scn2 = QtGui.QGraphicsScene()
         self.graphicsView_2.setScene(scn2)
         
-        pixmap_2 = QtGui.QPixmap("C:\Users\Work\Desktop\dct2.jpeg")
+        pixmap_2 = QtGui.QPixmap("C:\Users\corrado\Desktop\dct2.jpeg")
         scn2.addPixmap(pixmap_2)
         self.graphicsView_2.setScene(scn2)
     
